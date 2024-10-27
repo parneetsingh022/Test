@@ -25,11 +25,21 @@ jobs:
           RELEASE_FILE="release.json"
           VERSION=$(jq -r '.version' $RELEASE_FILE)
           DESCRIPTION=$(jq -r '.description' $RELEASE_FILE)
-          FEATURES=$(jq -r '.features[]' $RELEASE_FILE | sed 's/^/- /')
-          BUG_FIXES=$(jq -r '."bug-fix"[]' $RELEASE_FILE | sed 's/^/- /')
+          FEATURES=$(jq -r '.features[]?' $RELEASE_FILE | sed 's/^/- /')
+          BUG_FIXES=$(jq -r '."bug-fix"[]?' $RELEASE_FILE | sed 's/^/- /')
 
-          # Concatenate features and bug fixes for release notes
-          RELEASE_NOTES="${DESCRIPTION}\n\n## New Features\n${FEATURES}\n\n## Bug Fixes\n${BUG_FIXES}"
+          # Initialize RELEASE_NOTES with the description
+          RELEASE_NOTES="${DESCRIPTION}\n\n"
+
+          # Conditionally add New Features section if FEATURES is not empty
+          if [ -n "$FEATURES" ]; then
+            RELEASE_NOTES+="## New Features\n${FEATURES}\n\n"
+          fi
+
+          # Conditionally add Bug Fixes section if BUG_FIXES is not empty
+          if [ -n "$BUG_FIXES" ]; then
+            RELEASE_NOTES+="## Bug Fixes\n${BUG_FIXES}\n\n"
+          fi
 
           # Check if version contains a pre-release identifier
           if [[ "$VERSION" == *"-alpha"* || "$VERSION" == *"-beta"* || "$VERSION" == *"-rc"* ]]; then
