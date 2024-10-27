@@ -29,7 +29,7 @@ jobs:
           BUG_FIXES=$(jq -r '."bug-fix"[]' $RELEASE_FILE | sed 's/^/- /')
 
           # Concatenate features and bug fixes for release notes
-          RELEASE_NOTES="${DESCRIPTION}\n\n**New Features:**\n${FEATURES}\n\n**Bug Fixes:**\n${BUG_FIXES}"
+          RELEASE_NOTES="${DESCRIPTION}\n\n## New Features\n${FEATURES}\n\n## Bug Fixes\n${BUG_FIXES}"
 
           # Check if version contains a pre-release identifier
           if [[ "$VERSION" == *"-alpha"* || "$VERSION" == *"-beta"* || "$VERSION" == *"-rc"* ]]; then
