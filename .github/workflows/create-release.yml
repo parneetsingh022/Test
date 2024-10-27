@@ -50,7 +50,7 @@ jobs:
         if: env.RELEASE_EXISTS == 'false'
         uses: actions/create-release@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}  # GitHub PAT token
+          GITHUB_TOKEN: ${{ secrets.workflow }}  # GitHub PAT token
         with:
           tag_name: ${{ env.VERSION }}
           release_name: "Release ${{ env.VERSION }}"
