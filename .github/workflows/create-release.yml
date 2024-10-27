@@ -17,7 +17,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y jq
-          echo "${{ secrets.GH_TOKEN }}" | gh auth login --with-token
+          echo "${{ secrets.WORKFLOW }}" | gh auth login --with-token
 
       - name: Read release.json
         id: read_json
