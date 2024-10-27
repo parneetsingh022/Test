@@ -1,0 +1,42 @@
+name: Create Release from release.json
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - release.json  # Trigger only if release.json is modified
+
+jobs:
+  create_release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Read release.json
+        id: read_json
+        run: |
+          RELEASE_FILE="release.json"
+          VERSION=$(jq -r '.version' $RELEASE_FILE)
+          DESCRIPTION=$(jq -r '.description' $RELEASE_FILE)
+          FEATURES=$(jq -c '.features[]' $RELEASE_FILE | sed 's/^/- /')
+          BUG_FIXES=$(jq -c '.bug-fix[]' $RELEASE_FILE | sed 's/^/- /')
+          
+          # Concatenate features and bug fixes for release notes
+          RELEASE_NOTES="${DESCRIPTION}\n\n**Features:**\n${FEATURES}\n\n**Bug Fixes:**\n${BUG_FIXES}"
+          
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "RELEASE_NOTES=$RELEASE_NOTES" >> $GITHUB_ENV
+
+      - name: Create GitHub Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.WORKFLOW }}  # GitHub PAT token
+        with:
+          tag_name: ${{ env.VERSION }}
+          release_name: "Release ${{ env.VERSION }}"
+          body: ${{ env.RELEASE_NOTES }}
+          draft: false
+          prerelease: true  # Set to true if version is pre-release; adjust as needed
