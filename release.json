@@ -1,8 +1,7 @@
 {
-    "version": "0.2.3",
-    "description": "This is a description of the release",
-    "features": [
-        "Feature 1: this is feature 1",
-        "Feature 2: this is feature 2"
+    "version": "0.2.4",
+    "bug-fix": [
+        "Bug fix 1: this is bug fix 1",
+        "Bug fix 2: this is bug fix 2"
     ]
 }
