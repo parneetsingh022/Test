@@ -21,19 +21,22 @@ jobs:
           RELEASE_FILE="release.json"
           VERSION=$(jq -r '.version' $RELEASE_FILE)
           DESCRIPTION=$(jq -r '.description' $RELEASE_FILE)
-          FEATURES=$(jq -c '.features[]' $RELEASE_FILE | sed 's/^/- /')
-          BUG_FIXES=$(jq -c '.bug-fix[]' $RELEASE_FILE | sed 's/^/- /')
+          FEATURES=$(jq -r '.features[]' $RELEASE_FILE | sed 's/^/- /')
+          BUG_FIXES=$(jq -r '."bug-fix"[]' $RELEASE_FILE | sed 's/^/- /')
           
           # Concatenate features and bug fixes for release notes
           RELEASE_NOTES="${DESCRIPTION}\n\n**Features:**\n${FEATURES}\n\n**Bug Fixes:**\n${BUG_FIXES}"
           
+          # Export variables safely for multi-line content
           echo "VERSION=$VERSION" >> $GITHUB_ENV
-          echo "RELEASE_NOTES=$RELEASE_NOTES" >> $GITHUB_ENV
+          echo "RELEASE_NOTES<<EOF" >> $GITHUB_ENV
+          echo -e "$RELEASE_NOTES" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
 
       - name: Create GitHub Release
         uses: actions/create-release@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.WORKFLOW }}  # GitHub PAT token
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}  # GitHub PAT token
         with:
           tag_name: ${{ env.VERSION }}
           release_name: "Release ${{ env.VERSION }}"
